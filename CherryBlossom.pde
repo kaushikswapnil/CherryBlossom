@@ -19,7 +19,7 @@ ArrayList<Leaf> g_FreeLeaves;
 float g_LeafDropProbability = 0.0001f;
 float g_LeafBelowGroundStopProbablity = 0.01f;
 PImage g_BackgroundImg;
-float g_NoiseMaxStrengthMultiplier = 10.0f;
+float g_NoiseMaxStrengthMultiplier = 1.5f;
 float g_BranchSwayMinLength = g_InitialTreeLength/6;
 float g_BranchMaxSwayAngle = PI/6;
 
