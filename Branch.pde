@@ -4,13 +4,17 @@ class Branch
   ArrayList<Leaf> Leaves;
   PVector Start;
   float Angle;
-  //float Angle0, Angle1;
+  float Angle0, Angle1;
+  int SwayDir;
+  float SwayGrad;
   float Length;
   
   Branch(PVector start, float angle, float size)
   {
    Start = start.copy();
-   Angle = angle;
+   Angle = Angle0 = Angle1 = angle;
+   SwayDir = 0;
+   SwayGrad = 0.0f;
    Length = size;
    SubBranches = new ArrayList<Branch>();
    Leaves = new ArrayList<Leaf>();
@@ -24,6 +28,13 @@ class Branch
      {
       SubBranches.add(new Branch(end, Angle + random(-g_BranchingMaxWanderTheta, g_BranchingMaxWanderTheta), Length * random(g_BranchingMinMultiplier, g_BranchingMaxMultiplier))); 
      }
+   }
+   
+   if (Length <= g_BranchSwayMinLength)
+   {
+    float swayAngle = g_BranchMaxSwayAngle * (1.0f - (Length/(g_BranchSwayMinLength)));
+    Angle0 = Angle - swayAngle;
+    Angle1 = Angle + swayAngle;
    }
   }
   
@@ -73,14 +84,52 @@ class Branch
      }
     }
     
-    for (Branch branch: SubBranches)
+    boolean canbewindAffected = CanBeWindAffected();
+    if (canbewindAffected)
     {
-       branch.Update();
+      if (SwayDir == 0)
+      {
+        Angle = lerp(Angle0, Angle1, SwayGrad);
+      }
+      else
+      {
+        Angle = lerp(Angle1, Angle0, SwayGrad);
+      }
+      
+      SwayGrad += 0.05f;
+      if (SwayGrad>=0.98f)
+      {
+       SwayDir = (SwayDir+1)%2; 
+       SwayGrad = 0.0f;
+      }
     }
     
-    for (Leaf leaf : Leaves)
+    if (canbewindAffected)
     {
-      leaf.Update(); 
+      PVector end = GetEnd();
+      for (Branch branch: SubBranches)
+      {
+         branch.Start = end;
+         branch.Update();
+      }
+      
+      for (Leaf leaf : Leaves)
+      {
+        leaf.Pos = end;
+        leaf.Update(); 
+      } 
+    }
+    else
+    {
+      for (Branch branch: SubBranches)
+      {
+         branch.Update();
+      }
+      
+      for (Leaf leaf : Leaves)
+      {
+        leaf.Update(); 
+      } 
     }
   }
   
@@ -93,5 +142,11 @@ class Branch
   {
     PVector end = PVector.add(Start, PVector.mult(PVector.fromAngle(Angle), Length));
     return end;
+  }
+  
+  boolean CanBeWindAffected()
+  {
+   //return Angle0 != Angle1;
+   return false;
   }
 }

@@ -20,7 +20,8 @@ float g_LeafDropProbability = 0.0001f;
 float g_LeafBelowGroundStopProbablity = 0.01f;
 PImage g_BackgroundImg;
 float g_NoiseMaxStrengthMultiplier = 10.0f;
-float g_BranchSwayMinLength = g_InitialTreeLength/5;
+float g_BranchSwayMinLength = g_InitialTreeLength/6;
+float g_BranchMaxSwayAngle = PI/6;
 
 int Y_AXIS = 1;
 int X_AXIS = 2;
