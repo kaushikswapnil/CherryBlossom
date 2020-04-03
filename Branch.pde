@@ -31,7 +31,7 @@ class Branch
    pushMatrix();
    translate(Start.x, Start.y);
    rotate(Angle);
-   stroke(139, 69, 19);
+   stroke(68, 38, 11);
    strokeWeight(Length * g_BranchStrokeLengthMultiplier);
    line(0, 0, Length, 0);
    popMatrix();

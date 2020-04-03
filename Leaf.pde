@@ -25,7 +25,7 @@ class Leaf
   {
     if (Free)
     {
-      PVector acc = PVector.add(g_LeafGravity, new PVector(noise(frameCount), noise(frameCount/2)));
+      PVector acc = PVector.add(g_LeafGravity, PVector.mult(new PVector(noise(frameCount), noise(frameCount/(int)random(2, 5))), g_NoiseMaxStrengthMultiplier));
       Vel.add(acc);
       if (Vel.mag() > g_LeafTerminalVelocity)
       {
