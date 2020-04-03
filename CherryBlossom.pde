@@ -8,7 +8,7 @@ float g_LeafSize = 8.0f;
 float g_InitLeafSize = 1.0f;
 float g_LeafMaxFrameGrowth = 0.03f;
 float g_LeafGrowthProbability = 0.001f;
-PVector g_LeafGravity = new PVector(0.0f, 0.5f);
+PVector g_LeafGravity = new PVector(0.0f, 1f);
 float g_LeafTerminalVelocity = 2.0f;
 int g_MaxLeafCount = 1;
 float g_GroundHeight;
@@ -20,6 +20,7 @@ float g_LeafDropProbability = 0.0001f;
 float g_LeafBelowGroundStopProbablity = 0.01f;
 PImage g_BackgroundImg;
 float g_NoiseMaxStrengthMultiplier = 10.0f;
+float g_BranchSwayMinLength = g_InitialTreeLength/5;
 
 int Y_AXIS = 1;
 int X_AXIS = 2;
@@ -61,7 +62,7 @@ void draw()
 void CreateBackground()
 {
   color skyBlue = color(51, 85, 255);
-  color groundGrey = color(200, 200, 200);
+  color groundGrey = color(180, 180, 180);
   background(groundGrey); 
   
   SetGradient(0, 0, width, g_GroundHeight, skyBlue, groundGrey, Y_AXIS);

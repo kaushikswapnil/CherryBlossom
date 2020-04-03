@@ -4,6 +4,7 @@ class Branch
   ArrayList<Leaf> Leaves;
   PVector Start;
   float Angle;
+  //float Angle0, Angle1;
   float Length;
   
   Branch(PVector start, float angle, float size)
