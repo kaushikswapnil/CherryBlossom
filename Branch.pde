@@ -77,14 +77,17 @@ class Branch
       end.add(windForce);
       end.sub(Start);
       
-      Angle = end.heading();
+      float NewAngle = end.heading();
       
-      float stiffnessForceMultiplier = (Angle0-Angle)*Length*g_BranchStiffnessMultiplier;
-      if (abs(stiffnessForceMultiplier) > 0.0f)
+      float dispAngles = NewAngle - Angle0;
+      float distAngles = abs(dispAngles);
+      if (distAngles > 0.0f)
       {
-        //Angle += stiffnessForceMultiplier;
+        float stiffness = distAngles * g_BranchStiffnessMultiplier * Length * (dispAngles > 0.0 ? -1.0f : +1.0f);
+        NewAngle += stiffness;
       }
       
+      Angle = NewAngle;
       end = GetEnd();
       for (Leaf leaf : Leaves)
       {

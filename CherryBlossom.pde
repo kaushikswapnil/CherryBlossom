@@ -1,7 +1,7 @@
 float g_MinBranchLength = 15.0f;
 float g_BranchStrokeLengthMultiplier = 0.1f;
 float g_BranchingMinMultiplier = 0.5f;
-float g_BranchingMaxMultiplier = 0.92f;
+float g_BranchingMaxMultiplier = 0.85f;
 float g_BranchingMaxWanderTheta = PI/4;
 float g_InitialTreeLength = 150.0f;
 float g_LeafSize = 8.0f;
@@ -20,10 +20,10 @@ float g_LeafDropProbability = 0.0001f;
 float g_LeafBelowGroundStopProbablity = 0.01f;
 PImage g_BackgroundImg;
 float g_WindForceMultiplier = 1.5f;
-float g_BranchSwayMinLength = g_InitialTreeLength/2;
+float g_BranchSwayMinLength = g_InitialTreeLength/6;
 float g_BranchMaxSwayAngle = PI/6;
-float g_BranchWindForceMultiplier = 0.03f;
-float g_BranchStiffnessMultiplier = 0.00f;
+float g_BranchWindForceMultiplier = 0.0f;
+float g_BranchStiffnessMultiplier = 0.0f;
 
 ArrayList<Branch> g_Branches;
 
