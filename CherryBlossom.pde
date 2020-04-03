@@ -14,7 +14,7 @@ int g_MaxLeafCount = 1;
 float g_GroundHeight;
 float g_GroundXStep = 8.0f;
 float g_GroundPointSize = 2.0f;
-Branch g_Tree;
+//Branch g_Tree;
 ArrayList<Leaf> g_FreeLeaves;
 float g_LeafDropProbability = 0.0001f;
 float g_LeafBelowGroundStopProbablity = 0.01f;
@@ -23,6 +23,8 @@ float g_NoiseMaxStrengthMultiplier = 10.0f;
 float g_BranchSwayMinLength = g_InitialTreeLength/6;
 float g_BranchMaxSwayAngle = PI/6;
 
+ArrayList<Branch> g_Branches;
+
 int Y_AXIS = 1;
 int X_AXIS = 2;
 
@@ -30,20 +32,48 @@ void setup()
 {
   size(1200, 800);
   g_FreeLeaves = new ArrayList<Leaf>();
+  g_Branches = new ArrayList<Branch>();
   g_GroundHeight = 5*height/6;
-  g_Tree = new Branch(new PVector(width/2, g_GroundHeight), -PI/2, g_InitialTreeLength);
+  
+  ArrayList<Integer> toProcess = new ArrayList<Integer>();
+  g_Branches.add(new Branch(new PVector(width/2, g_GroundHeight), -PI/2, g_InitialTreeLength));
+  toProcess.add(0);
+  
+  while(toProcess.size() != 0)
+  {
+   int parentBranch = toProcess.get(toProcess.size()-1);
+   toProcess.remove(toProcess.size()-1);
+   
+   Branch parent = g_Branches.get(parentBranch);
+   
+   if (parent.Length > g_MinBranchLength)
+   {
+     PVector end = parent.GetEnd();
+     
+     int numBranches = (int)random(1, 5);
+     while (numBranches-- > 0)
+     {
+      Branch subBranch = new Branch(end, parent.Angle + random(-g_BranchingMaxWanderTheta, g_BranchingMaxWanderTheta), parent.Length * random(g_BranchingMinMultiplier, g_BranchingMaxMultiplier));
+      subBranch.Parent = parentBranch;
+      toProcess.add(g_Branches.size());
+      g_Branches.add(subBranch);
+     }
+   }
+  }
   noiseSeed(0);
   
-  //Create background
   CreateBackground();
 }
 
 void draw()
 {
-  //DrawBackground();
   image(g_BackgroundImg, 0, 0);
-  g_Tree.Draw();
-  g_Tree.Update();
+  
+  for (Branch branch : g_Branches)
+  {
+   branch.Update();
+   branch.Draw();
+  }
   
   for (int leafIter = g_FreeLeaves.size()-1; leafIter >= 0; --leafIter)
   {

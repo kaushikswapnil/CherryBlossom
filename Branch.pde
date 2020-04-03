@@ -1,6 +1,5 @@
 class Branch
 {
-  ArrayList<Branch> SubBranches;
   ArrayList<Leaf> Leaves;
   PVector Start;
   float Angle;
@@ -8,6 +7,7 @@ class Branch
   int SwayDir;
   float SwayGrad;
   float Length;
+  int Parent;
   
   Branch(PVector start, float angle, float size)
   {
@@ -16,19 +16,8 @@ class Branch
    SwayDir = 0;
    SwayGrad = 0.0f;
    Length = size;
-   SubBranches = new ArrayList<Branch>();
+   Parent = -1;
    Leaves = new ArrayList<Leaf>();
-   
-   if (Length > g_MinBranchLength)
-   {
-     PVector end = GetEnd();
-     
-     int numBranches = (int)random(1, 5);
-     while (numBranches-- > 0)
-     {
-      SubBranches.add(new Branch(end, Angle + random(-g_BranchingMaxWanderTheta, g_BranchingMaxWanderTheta), Length * random(g_BranchingMinMultiplier, g_BranchingMaxMultiplier))); 
-     }
-   }
    
    if (Length <= g_BranchSwayMinLength)
    {
@@ -48,11 +37,6 @@ class Branch
    line(0, 0, Length, 0);
    popMatrix();
    
-   for (Branch branch: SubBranches)
-   {
-     branch.Draw();
-   }
-   
    for (Leaf leaf : Leaves)
    {
     leaf.Draw(); 
@@ -70,8 +54,8 @@ class Branch
          int numLeaves = (int)random(1, 5);
          PVector end = GetEnd();
          while(numLeaves-- > 0)
-         {
-           Leaves.add(new Leaf(end));
+         {;
+          Leaves.add(new Leaf(end));
          }
        }
      }
@@ -104,32 +88,9 @@ class Branch
       }
     }
     
-    if (canbewindAffected)
+    for (Leaf leaf : Leaves)
     {
-      PVector end = GetEnd();
-      for (Branch branch: SubBranches)
-      {
-         branch.Start = end;
-         branch.Update();
-      }
-      
-      for (Leaf leaf : Leaves)
-      {
-        leaf.Pos = end;
-        leaf.Update(); 
-      } 
-    }
-    else
-    {
-      for (Branch branch: SubBranches)
-      {
-         branch.Update();
-      }
-      
-      for (Leaf leaf : Leaves)
-      {
-        leaf.Update(); 
-      } 
+     leaf.Update(); 
     }
   }
   
