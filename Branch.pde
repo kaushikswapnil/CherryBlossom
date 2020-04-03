@@ -3,7 +3,7 @@ class Branch
   ArrayList<Leaf> Leaves;
   PVector Start;
   float Angle;
-  float Angle0, Angle1;
+  float Angle0;
   int SwayDir;
   float SwayGrad;
   float Length;
@@ -12,19 +12,12 @@ class Branch
   Branch(PVector start, float angle, float size)
   {
    Start = start.copy();
-   Angle = Angle0 = Angle1 = angle;
+   Angle = Angle0 = angle;
    SwayDir = 0;
    SwayGrad = 0.0f;
    Length = size;
    Parent = -1;
    Leaves = new ArrayList<Leaf>();
-   
-   if (Length <= g_BranchSwayMinLength)
-   {
-    float swayAngle = g_BranchMaxSwayAngle * (1.0f - (Length/(g_BranchSwayMinLength)));
-    Angle0 = Angle - swayAngle;
-    Angle1 = Angle + swayAngle;
-   }
   }
   
   void Draw()
@@ -68,30 +61,44 @@ class Branch
      }
     }
     
-    boolean canbewindAffected = CanBeWindAffected();
-    if (canbewindAffected)
+    boolean canBeWindAffected = CanBeWindAffected();
+    if (canBeWindAffected)
     {
-      if (SwayDir == 0)
+      //Get parents start position and update self
+      if (g_Branches.get(Parent).CanBeWindAffected())
       {
-        Angle = lerp(Angle0, Angle1, SwayGrad);
-      }
-      else
-      {
-        Angle = lerp(Angle1, Angle0, SwayGrad);
+       Start = g_Branches.get(Parent).GetEnd();
       }
       
-      SwayGrad += 0.05f;
-      if (SwayGrad>=0.98f)
+      PVector end = GetEnd();
+      PVector windForce = PVector.fromAngle(map(noise(end.x, end.y, frameCount/100), 0.0, 1.0, 0.0, TWO_PI));
+      windForce.mult(g_BranchWindForceMultiplier);
+      
+      end.add(windForce);
+      end.sub(Start);
+      
+      Angle = end.heading();
+      
+      float stiffnessForceMultiplier = (Angle0-Angle)*Length*g_BranchStiffnessMultiplier;
+      if (abs(stiffnessForceMultiplier) > 0.0f)
       {
-       SwayDir = (SwayDir+1)%2; 
-       SwayGrad = 0.0f;
+        //Angle += stiffnessForceMultiplier;
+      }
+      
+      end = GetEnd();
+      for (Leaf leaf : Leaves)
+      {
+       leaf.Pos = end.copy();
+       leaf.Update(); 
       }
     }
-    
-    for (Leaf leaf : Leaves)
+    else
     {
-     leaf.Update(); 
-    }
+      for (Leaf leaf : Leaves)
+      {
+       leaf.Update(); 
+      } 
+    }    
   }
   
   boolean IsLeaf()
@@ -107,7 +114,6 @@ class Branch
   
   boolean CanBeWindAffected()
   {
-   //return Angle0 != Angle1;
-   return false;
+   return Length <= g_BranchSwayMinLength;
   }
 }
