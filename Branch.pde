@@ -74,12 +74,21 @@ class Branch
       PVector end = GetEnd();
       
       float noiseAtEndPos = noise(end.x, end.y, frameCount/1000);
-      float angAcc = noiseAtEndPos > 0.5f ? (noiseAtEndPos < 0.75f ? -g_BranchWindForceAngAcc : g_BranchWindForceAngAcc) : 0.0f;
+      PVector windForce = PVector.fromAngle(map(noiseAtEndPos, 0.0, 1.0, 0.0, TWO_PI));
+      windForce.mult(g_BranchWindForceMultiplier);
+      
+      PVector branchDir = PVector.fromAngle(Angle);
+      PVector crossBetween = branchDir.cross(windForce);
+      windForce = crossBetween.cross(branchDir);
+      float windForceMag = windForce.mag();
+      windForceMag *= ((crossBetween.z < 0.0f) ? -1.0f : 1.0f);
+      //float angAcc = noiseAtEndPos > 0.5f ? (noiseAtEndPos < 0.75f ? -g_BranchWindForceAngAcc : g_BranchWindForceAngAcc) : 0.0f;
+      float angAcc = windForceMag;
       
       float dispAngles = Angle0 - Angle;
       float distAngles = abs(dispAngles);
       
-      float resistance = distAngles * g_BranchStiffnessMultiplier * (dispAngles < 0.0 ? -1.0f : 1.0f);
+      float resistance = distAngles * g_BranchStiffnessMultiplier * Length * (dispAngles < 0.0 ? -1.0f : 1.0f);
       angAcc += resistance;
       
       float angVel = (Angle - PrevAngle)*g_BranchAngVelDampingFactor;
