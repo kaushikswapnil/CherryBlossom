@@ -20,10 +20,10 @@ float g_LeafDropProbability = 0.0001f;
 float g_LeafBelowGroundStopProbablity = 0.01f;
 PImage g_BackgroundImg;
 float g_WindForceMultiplier = 1.5f;
-float g_BranchSwayMinLength = g_InitialTreeLength/6;
-float g_BranchMaxSwayAngle = PI/6;
-float g_BranchWindForceMultiplier = 0.0f;
-float g_BranchStiffnessMultiplier = 0.0f;
+float g_BranchSwayMinLength = g_InitialTreeLength/30;
+float g_BranchWindForceAngAcc = PI/512;
+float g_BranchStiffnessMultiplier = 0.1f;
+float g_BranchAngVelDampingFactor = 0.5f;
 
 ArrayList<Branch> g_Branches;
 

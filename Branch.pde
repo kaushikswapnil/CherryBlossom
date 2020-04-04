@@ -4,6 +4,7 @@ class Branch
   PVector Start;
   float Angle;
   float Angle0;
+  float PrevAngle;
   int SwayDir;
   float SwayGrad;
   float Length;
@@ -12,7 +13,7 @@ class Branch
   Branch(PVector start, float angle, float size)
   {
    Start = start.copy();
-   Angle = Angle0 = angle;
+   Angle = Angle0 = PrevAngle = angle;
    SwayDir = 0;
    SwayGrad = 0.0f;
    Length = size;
@@ -47,7 +48,7 @@ class Branch
          int numLeaves = (int)random(1, 5);
          PVector end = GetEnd();
          while(numLeaves-- > 0)
-         {;
+         {
           Leaves.add(new Leaf(end));
          }
        }
@@ -71,23 +72,22 @@ class Branch
       }
       
       PVector end = GetEnd();
-      PVector windForce = PVector.fromAngle(map(noise(end.x, end.y, frameCount/100), 0.0, 1.0, 0.0, TWO_PI));
-      windForce.mult(g_BranchWindForceMultiplier);
       
-      end.add(windForce);
-      end.sub(Start);
+      float noiseAtEndPos = noise(end.x, end.y, frameCount/1000);
+      float angAcc = noiseAtEndPos > 0.5f ? (noiseAtEndPos < 0.75f ? -g_BranchWindForceAngAcc : g_BranchWindForceAngAcc) : 0.0f;
       
-      float NewAngle = end.heading();
-      
-      float dispAngles = NewAngle - Angle0;
+      float dispAngles = Angle0 - Angle;
       float distAngles = abs(dispAngles);
-      if (distAngles > 0.0f)
-      {
-        float stiffness = distAngles * g_BranchStiffnessMultiplier * Length * (dispAngles > 0.0 ? -1.0f : +1.0f);
-        NewAngle += stiffness;
-      }
       
-      Angle = NewAngle;
+      float resistance = distAngles * g_BranchStiffnessMultiplier * (dispAngles < 0.0 ? -1.0f : 1.0f);
+      angAcc += resistance;
+      
+      float angVel = (Angle - PrevAngle)*g_BranchAngVelDampingFactor;
+      angVel += angAcc;
+      
+      PrevAngle = Angle;
+      Angle += angVel;
+      
       end = GetEnd();
       for (Leaf leaf : Leaves)
       {
@@ -112,6 +112,12 @@ class Branch
   PVector GetEnd()
   {
     PVector end = PVector.add(Start, PVector.mult(PVector.fromAngle(Angle), Length));
+    return end;
+  }
+  
+  PVector GetIdealEnd()
+  {
+    PVector end = PVector.add(Start, PVector.mult(PVector.fromAngle(Angle0), Length));
     return end;
   }
   

@@ -25,7 +25,7 @@ class Leaf
   {
     if (Free)
     {
-      PVector acc = PVector.add(g_LeafGravity, PVector.mult(PVector.fromAngle(map(noise(Pos.x, Pos.y, frameCount/100), 0.0, 1.0, 0.0, TWO_PI)), g_WindForceMultiplier));
+      PVector acc = PVector.add(g_LeafGravity, PVector.mult(PVector.fromAngle(map(noise(Pos.x, Pos.y, frameCount/1000), 0.0, 1.0, 0.0, TWO_PI)), g_WindForceMultiplier));
       Vel.add(acc);
       if (Vel.mag() > g_LeafTerminalVelocity)
       {
