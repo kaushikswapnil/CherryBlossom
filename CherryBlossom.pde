@@ -27,12 +27,49 @@ float g_BranchAngVelDampingFactor = 0.5f;
 
 ArrayList<Branch> g_Branches;
 
+boolean g_Update = false;
+
 int Y_AXIS = 1;
 int X_AXIS = 2;
 
 void setup()
 {
   size(1200, 800);
+  InitializeSystem();
+}
+
+void draw()
+{
+  if (!g_Update)
+  {
+   return; 
+  }
+  
+  image(g_BackgroundImg, 0, 0);
+  
+  for (Branch branch : g_Branches)
+  {
+   branch.Update();
+   branch.Draw();
+  }
+  
+  for (int leafIter = g_FreeLeaves.size()-1; leafIter >= 0; --leafIter)
+  {
+   Leaf freeLeaf = g_FreeLeaves.get(leafIter);
+   if (freeLeaf.IsOutOfBounds())
+   {
+    g_FreeLeaves.remove(freeLeaf); 
+   }
+   else
+   {
+    freeLeaf.Draw();
+    freeLeaf.Update(); 
+   }
+  }
+}
+
+void InitializeSystem()
+{
   g_FreeLeaves = new ArrayList<Leaf>();
   g_Branches = new ArrayList<Branch>();
   g_GroundHeight = 5*height/6;
@@ -65,30 +102,10 @@ void setup()
   noiseSeed(0);
   
   CreateBackground();
-}
-
-void draw()
-{
-  image(g_BackgroundImg, 0, 0);
   
   for (Branch branch : g_Branches)
   {
-   branch.Update();
-   branch.Draw();
-  }
-  
-  for (int leafIter = g_FreeLeaves.size()-1; leafIter >= 0; --leafIter)
-  {
-   Leaf freeLeaf = g_FreeLeaves.get(leafIter);
-   if (freeLeaf.IsOutOfBounds())
-   {
-    g_FreeLeaves.remove(freeLeaf); 
-   }
-   else
-   {
-    freeLeaf.Draw();
-    freeLeaf.Update(); 
-   }
+   branch.Draw(); 
   }
 }
 
@@ -136,4 +153,17 @@ void SetGradient(int x, int y, float w, float h, color c1, color c2, int axis ) 
       line(i, y, i, y+h);
     }
   }
+}
+
+void keyPressed()
+{
+ if (key == 'r' || key == 'R')
+ {
+   InitializeSystem();
+ }
+ 
+ if (key == ' ')
+ {
+   g_Update = !g_Update;
+ }
 }
